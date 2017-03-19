@@ -9,28 +9,23 @@ namespace Tomograph.Library.SuperTomograph
 
         public Bitmap InputBitmap => _inputBitmap ?? (_inputBitmap = GetInputBitmap());
         public Bitmap Sinogram => _sinogram ?? (_sinogram = GetSinogram());
-        public Bitmap OutputBitmap => _outputBitmap ?? (_outputBitmap = GetOutputBitmap());
-        public Bitmap FilteredOutputBitmap
-            => _filteredOutputBitmap ?? (_filteredOutputBitmap = GetFilteredOutputBitmap());
-
+        public Bitmap[] OutputBitmaps => _outputBitmaps ?? (_outputBitmaps = GetOutputBitmaps());
+        
         private Bitmap _inputBitmap;
         private readonly IBitmapLoader _bitmapLoader;
 
         private Bitmap _sinogram;
-        private readonly ISinogramGenerator _sinogramGenerator;
+        private readonly IEmitterDetectorSystem _emitterDetectorSystem;
 
-        private Bitmap _outputBitmap;
-        private readonly IOutputBitmapGenerator _outputBitmapGenerator;
+        private Bitmap[] _outputBitmaps;
 
-        private Bitmap _filteredOutputBitmap;
         private readonly IOutputBitmapFilter _outputBitmapFilter;
 
-        public SuperTomograph(IBitmapLoader bitmapLoader, ISinogramGenerator sinogramGenerator,
-            IOutputBitmapGenerator outputBitmapGenerator, IOutputBitmapFilter outputBitmapFilter)
-        {         
+        public SuperTomograph(IBitmapLoader bitmapLoader, IEmitterDetectorSystem emitterDetectorSystem,
+            IOutputBitmapFilter outputBitmapFilter)
+        {
             _bitmapLoader = bitmapLoader;
-            _sinogramGenerator = sinogramGenerator;
-            _outputBitmapGenerator = outputBitmapGenerator;
+            _emitterDetectorSystem = emitterDetectorSystem;
             _outputBitmapFilter = outputBitmapFilter;
             Configuration = new TomographConfiguration();
         }
@@ -39,8 +34,7 @@ namespace Tomograph.Library.SuperTomograph
         {
             _inputBitmap = null;
             _sinogram = null;
-            _outputBitmap = null;
-            _filteredOutputBitmap = null;
+            _outputBitmaps = null;
         }
 
         private Bitmap GetInputBitmap()
@@ -50,17 +44,17 @@ namespace Tomograph.Library.SuperTomograph
 
         private Bitmap GetSinogram()
         {
-            return _sinogramGenerator.GetSinogram(InputBitmap,Configuration);
+            return _emitterDetectorSystem.GetSinogram(InputBitmap,Configuration);
         }
 
-        private Bitmap GetOutputBitmap()
+        private Bitmap[] GetOutputBitmaps()
         {
-            return _outputBitmapGenerator.GetOutputBitmap(Sinogram);
+            return _emitterDetectorSystem.GetOutputBitmapsFromSinogram(Sinogram,Configuration);
         }
 
-        private Bitmap GetFilteredOutputBitmap()
+        private Bitmap GetFilteredOutputBitmap(Bitmap bitmap)
         {
-            return _outputBitmapFilter.GetFilteredOutputBitmap(OutputBitmap);
+            return _outputBitmapFilter.GetFilteredOutputBitmap(bitmap);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Tomograph.Tests
         [Test]
         public void LoadBitmap()
         {
-            string bitmapPath = @"C:\Users\amileszko\Pictures\sample.bmp";
+            string bitmapPath = @"C:\Users\amileszko\Pictures\sample.png";
 
             SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
 
@@ -34,7 +34,7 @@ namespace Tomograph.Tests
                 InputBitmapPath = bitmapPath,
                 Alpha = Math.PI/180,
                 Phi = Math.PI/2,
-                DetectorsCount = 100
+                DetectorsCount = 10
             };
 
             tomograph.Configuration = configuration;

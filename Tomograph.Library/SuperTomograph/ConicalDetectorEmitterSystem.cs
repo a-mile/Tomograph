@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using Tomograph.Library.Abstract;
 
 namespace Tomograph.Library.SuperTomograph
@@ -11,12 +12,13 @@ namespace Tomograph.Library.SuperTomograph
         public int Y { get; set; }
     }
 
-    public class SinogramGenerator : ISinogramGenerator
+    public class ConicalDetectorEmitterSystem : IEmitterDetectorSystem
     {
         public Bitmap GetSinogram(Bitmap inputBitmap, TomographConfiguration configuration)
         {
-            Bitmap sinogram = new Bitmap((int)(360/RadianToDegree(configuration.Alpha))+1, configuration.DetectorsCount);
-            double[,] brightness = new double[(int)(360 / RadianToDegree(configuration.Alpha))+1, configuration.DetectorsCount];           
+            int columnsCount = (int) (360/RadianToDegree(configuration.Alpha)) + 1;
+
+            double[,] brightnessArray = new double[columnsCount, configuration.DetectorsCount];           
 
             int width = inputBitmap.Width - 1;
             int height = inputBitmap.Height - 1;
@@ -24,11 +26,8 @@ namespace Tomograph.Library.SuperTomograph
             int radius = Math.Min(width/2,height/2);
 
             double angle = 0;
-            int column = 0;
-
-            double maxBrightness = 0;
-            double minBrightness = double.MaxValue;
-
+            int columnNumber = 0;
+            
             while (angle < Math.PI * 2)
             {
                 var emitterCoordinates = new Coordinates()
@@ -53,31 +52,52 @@ namespace Tomograph.Library.SuperTomograph
                                           i*configuration.Phi/(configuration.DetectorsCount - 1))) + height/2
                     };
                     
-                    brightness[column,i] = GetBrightness(inputBitmap, emitterCoordinates, detectorCoordinates);
-
-                    if (brightness[column, i] > maxBrightness)
-                        maxBrightness = brightness[column, i];
-                    if (brightness[column, i] < minBrightness)
-                        minBrightness = brightness[column, i];
+                    brightnessArray[columnNumber,i] = GetBrightness(inputBitmap, emitterCoordinates, detectorCoordinates);
                 }
 
-                column++;
+                columnNumber++;
                 angle += configuration.Alpha;
             }
 
-            for (int i = 0; i < (int)(360 / RadianToDegree(configuration.Alpha)); i++)
-            {
-                for (int j = 0; j < configuration.DetectorsCount; j++)
-                {
-                    brightness[i, j] = (brightness[i, j] - minBrightness)/(maxBrightness - minBrightness);
+            NormalizeArray(brightnessArray);
 
-                    sinogram.SetPixel(i, j,
-                        Color.FromArgb((int) (brightness[i, j]*255), (int) (brightness[i, j]*255),
-                            (int) (brightness[i, j]*255)));
+            return GetBitmapFromBrightnessArray(brightnessArray);
+        }
+
+        public Bitmap[] GetOutputBitmapsFromSinogram(Bitmap sinogram, TomographConfiguration configuration)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void NormalizeArray(double[,] inputArray)
+        {            
+            double max = inputArray.Cast<double>().Max();
+            double min = inputArray.Cast<double>().Min();
+
+            for (int i = 0; i < inputArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < inputArray.GetLength(1); j++)
+                {
+                    inputArray[i, j] = (inputArray[i, j] - min)/(max - min);
+                }
+            }
+        }
+
+        private Bitmap GetBitmapFromBrightnessArray(double[,] brigthnessArray)
+        {
+            Bitmap bitmap = new Bitmap(brigthnessArray.GetLength(0), brigthnessArray.GetLength(1));
+
+            for (int i = 0; i < brigthnessArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < brigthnessArray.GetLength(1); j++)
+                {
+                    bitmap.SetPixel(i, j,
+                        Color.FromArgb((int) (brigthnessArray[i, j]*255), (int) (brigthnessArray[i, j]*255),
+                            (int) (brigthnessArray[i, j]*255)));
                 }
             }
 
-            return sinogram;
+            return bitmap;
         }
 
         private double RadianToDegree(double angle)
@@ -157,6 +177,7 @@ namespace Tomograph.Library.SuperTomograph
                         d += bi;
                         y += yi;
                     }
+
                     sum += inputBitmap.GetPixel(x, y).GetBrightness();
                 }
             }
