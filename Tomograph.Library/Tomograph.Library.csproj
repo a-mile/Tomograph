@@ -57,11 +57,13 @@
     <Compile Include="Abstract\IOutputBitmapFilter.cs" />
     <Compile Include="Abstract\IOutputBitmapGenerator.cs" />
     <Compile Include="Abstract\ISinogramGenerator.cs" />
+    <Compile Include="SuperTomograph\TomographConfiguration.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Infrastructure\IoC.cs" />
     <Compile Include="Infrastructure\TomographRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SuperTomograph\SimpleBitmapLoader.cs" />
+    <Compile Include="SuperTomograph\SinogramGenerator.cs" />
     <Compile Include="SuperTomograph\SuperTomograph.cs" />
   </ItemGroup>
   <ItemGroup>

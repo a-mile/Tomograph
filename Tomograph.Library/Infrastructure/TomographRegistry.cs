@@ -10,7 +10,7 @@ namespace Tomograph.Library.Infrastructure
         public TomographRegistry()
         {
             this.For<IBitmapLoader>().Use<SimpleBitmapLoader>();
-            this.For<ISinogramGenerator>().Use(new Mock<ISinogramGenerator>().Object);
+            this.For<ISinogramGenerator>().Use<SinogramGenerator>();
             this.For<IOutputBitmapGenerator>().Use(new Mock<IOutputBitmapGenerator>().Object);
             this.For<IOutputBitmapFilter>().Use(new Mock<IOutputBitmapFilter>().Object);
         }

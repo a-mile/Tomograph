@@ -5,7 +5,7 @@ namespace Tomograph.Library.SuperTomograph
 {
     public class SuperTomograph
     {
-        public string InputBitmapPath { get; private set; }
+        public TomographConfiguration Configuration { get; set; }
 
         public Bitmap InputBitmap => _inputBitmap ?? (_inputBitmap = GetInputBitmap());
         public Bitmap Sinogram => _sinogram ?? (_sinogram = GetSinogram());
@@ -32,24 +32,25 @@ namespace Tomograph.Library.SuperTomograph
             _sinogramGenerator = sinogramGenerator;
             _outputBitmapGenerator = outputBitmapGenerator;
             _outputBitmapFilter = outputBitmapFilter;
+            Configuration = new TomographConfiguration();
         }
 
-        public void SetInputBitmapPath(string path)
+        public void CleanTomograph()
         {
-            InputBitmapPath = path;
             _inputBitmap = null;
             _sinogram = null;
             _outputBitmap = null;
+            _filteredOutputBitmap = null;
         }
 
         private Bitmap GetInputBitmap()
         {
-            return _bitmapLoader.LoadBitmap(InputBitmapPath);
+            return _bitmapLoader.LoadBitmap(Configuration.InputBitmapPath);
         }
 
         private Bitmap GetSinogram()
         {
-            return _sinogramGenerator.GetSinogram(InputBitmap);
+            return _sinogramGenerator.GetSinogram(InputBitmap,Configuration);
         }
 
         private Bitmap GetOutputBitmap()
