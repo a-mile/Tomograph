@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomograph.GUI", "Tomograph.GUI\Tomograph.GUI.csproj", "{5E731466-181B-4791-A9DA-7EAA97D351C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomograph.Library", "Tomograph.Library\Tomograph.Library.csproj", "{D03768C1-44A7-40EF-BF5C-4FCDD041AF37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomograph.Tests", "Tomograph.Tests\Tomograph.Tests.csproj", "{C1E3709F-A041-4627-A002-EB08E8A68727}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E731466-181B-4791-A9DA-7EAA97D351C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E731466-181B-4791-A9DA-7EAA97D351C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E731466-181B-4791-A9DA-7EAA97D351C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E731466-181B-4791-A9DA-7EAA97D351C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D03768C1-44A7-40EF-BF5C-4FCDD041AF37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D03768C1-44A7-40EF-BF5C-4FCDD041AF37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D03768C1-44A7-40EF-BF5C-4FCDD041AF37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D03768C1-44A7-40EF-BF5C-4FCDD041AF37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1E3709F-A041-4627-A002-EB08E8A68727}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1E3709F-A041-4627-A002-EB08E8A68727}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1E3709F-A041-4627-A002-EB08E8A68727}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1E3709F-A041-4627-A002-EB08E8A68727}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
