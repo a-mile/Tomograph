@@ -9,9 +9,9 @@ namespace Tomograph.Library.Infrastructure
     {
         public TomographRegistry()
         {
-            this.For<IBitmapLoader>().Use<SimpleBitmapLoader>();
+            this.For<IImageLoader>().Use<EmguCVImageLoader>();
             this.For<IEmitterDetectorSystem>().Use<ConicalDetectorEmitterSystem>();
-            this.For<IOutputBitmapFilter>().Use(new Mock<IOutputBitmapFilter>().Object);
+            this.For<IOutputImageFilter>().Use(new Mock<IOutputImageFilter>().Object);
         }
     }
 }

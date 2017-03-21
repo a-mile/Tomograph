@@ -1,11 +1,13 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using Emgu.CV;
+using Emgu.CV.Structure;
 using Tomograph.Library.SuperTomograph;
 
 namespace Tomograph.Library.Abstract
 {
     public interface IEmitterDetectorSystem
     {
-        Bitmap GetSinogram(Bitmap inputBitmap, TomographConfiguration configuration);
-        Bitmap[] GetOutputBitmapsFromSinogram(Bitmap sinogram, TomographConfiguration configuration);
+        Image<Gray,byte> GetSinogram(Image<Gray, byte> inputImage, TomographConfiguration configuration);
+        IEnumerable<Image<Gray, byte>> GetOutputImagesFromSinogram(Image<Gray, byte> inputImage, Image<Gray, byte> sinogram, TomographConfiguration configuration);
     }
 }

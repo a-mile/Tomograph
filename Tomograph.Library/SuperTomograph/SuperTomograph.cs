@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using Emgu.CV;
+using Emgu.CV.Structure;
 using Tomograph.Library.Abstract;
 
 namespace Tomograph.Library.SuperTomograph
@@ -7,54 +9,57 @@ namespace Tomograph.Library.SuperTomograph
     {
         public TomographConfiguration Configuration { get; set; }
 
-        public Bitmap InputBitmap => _inputBitmap ?? (_inputBitmap = GetInputBitmap());
-        public Bitmap Sinogram => _sinogram ?? (_sinogram = GetSinogram());
-        public Bitmap[] OutputBitmaps => _outputBitmaps ?? (_outputBitmaps = GetOutputBitmaps());
+        public Image<Gray,byte> InputImage => _inputImage ?? (_inputImage = GetInputImage());
+        public Image<Gray, byte> Sinogram {
+            get { return _sinogram ?? (_sinogram = GetSinogram()); }
+            set { _sinogram = value; }
+        }
+        public IEnumerable<Image<Gray, byte>> OutputImages => _outputImages ?? (_outputImages = GetOutputImages());
         
-        private Bitmap _inputBitmap;
-        private readonly IBitmapLoader _bitmapLoader;
+        private Image<Gray, byte> _inputImage;
+        private readonly IImageLoader _bitmapLoader;
 
-        private Bitmap _sinogram;
+        private Image<Gray, byte> _sinogram;
         private readonly IEmitterDetectorSystem _emitterDetectorSystem;
 
-        private Bitmap[] _outputBitmaps;
+        private IEnumerable<Image<Gray, byte>> _outputImages;
 
-        private readonly IOutputBitmapFilter _outputBitmapFilter;
+        private readonly IOutputImageFilter _outputImageFilter;
 
-        public SuperTomograph(IBitmapLoader bitmapLoader, IEmitterDetectorSystem emitterDetectorSystem,
-            IOutputBitmapFilter outputBitmapFilter)
+        public SuperTomograph(IImageLoader bitmapLoader, IEmitterDetectorSystem emitterDetectorSystem,
+            IOutputImageFilter outputImageFilter)
         {
             _bitmapLoader = bitmapLoader;
             _emitterDetectorSystem = emitterDetectorSystem;
-            _outputBitmapFilter = outputBitmapFilter;
+            _outputImageFilter = outputImageFilter;
             Configuration = new TomographConfiguration();
         }
 
         public void CleanTomograph()
         {
-            _inputBitmap = null;
+            _inputImage = null;
             _sinogram = null;
-            _outputBitmaps = null;
+            _outputImages = null;
         }
 
-        private Bitmap GetInputBitmap()
+        private Image<Gray, byte> GetInputImage()
         {
-            return _bitmapLoader.LoadBitmap(Configuration.InputBitmapPath);
+            return _bitmapLoader.LoadImage(Configuration.InputImagePath);
         }
 
-        private Bitmap GetSinogram()
+        private Image<Gray, byte> GetSinogram()
         {
-            return _emitterDetectorSystem.GetSinogram(InputBitmap,Configuration);
+            return _emitterDetectorSystem.GetSinogram(InputImage,Configuration);
         }
 
-        private Bitmap[] GetOutputBitmaps()
+        private IEnumerable<Image<Gray, byte>> GetOutputImages()
         {
-            return _emitterDetectorSystem.GetOutputBitmapsFromSinogram(Sinogram,Configuration);
+            return _emitterDetectorSystem.GetOutputImagesFromSinogram(InputImage,Sinogram,Configuration);
         }
 
-        private Bitmap GetFilteredOutputBitmap(Bitmap bitmap)
+        private Image<Gray, byte> GetFilteredOutputImage(Image<Gray, byte> bitmap)
         {
-            return _outputBitmapFilter.GetFilteredOutputBitmap(bitmap);
+            return _outputImageFilter.GetFilteredOutputImage(bitmap);
         }
     }
 }
