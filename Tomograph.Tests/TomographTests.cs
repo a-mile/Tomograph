@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -10,14 +11,22 @@ namespace Tomograph.Tests
 {
     public class TomographTests
     {
+        private readonly string _projectDirectory;
+        private readonly string _samplePath;
+
+        public TomographTests()
+        {
+            _projectDirectory =
+                Directory.GetParent(AppDomain.CurrentDomain.SetupInformation.ApplicationBase).Parent?.FullName + @"\images\";
+            _samplePath = _projectDirectory + "sample.png";
+        }
+
         [Test]
         public void LoadImage()
-        {
-            string imagePath = @"C:\Users\amileszko\Pictures\sample.png";           
-
+        {          
             SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
 
-            tomograph.Configuration.InputImagePath = imagePath;
+            tomograph.Configuration.InputImagePath = _samplePath;
 
             Image<Gray, byte> image = tomograph.InputImage;
 
@@ -26,14 +35,12 @@ namespace Tomograph.Tests
 
         [Test]
         public void GetSinogram()
-        {
-            string imagePath = @"C:\Users\amileszko\Pictures\sample.png";
-
+        { 
             SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
 
             TomographConfiguration configuration = new TomographConfiguration
             {
-                InputImagePath = imagePath,
+                InputImagePath = _samplePath,
                 Alpha = (float)Math.PI/180,
                 Phi = (float)Math.PI/2,
                 DetectorsCount = 360
@@ -45,31 +52,34 @@ namespace Tomograph.Tests
 
             Assert.IsNotNull(image);
 
-            tomograph.Sinogram.Save(@"C:\Users\amileszko\Pictures\sinogram.bmp");
+            image.Save(_projectDirectory + "sinogram.bmp");
         }
 
         [Test]
         public void GetOutputImage()
         {
-            string imagePath = @"C:\Users\amileszko\Pictures\sample.png";
-
             SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
 
             TomographConfiguration configuration = new TomographConfiguration
             {
-                InputImagePath = imagePath,
+                InputImagePath = _samplePath,
                 Alpha = (float)Math.PI / 180,
                 Phi = (float)Math.PI / 2,
-                DetectorsCount = 360
+                DetectorsCount = 360,
+                Filter = false,
+                OutputImagesCount = 10
             };
 
             tomograph.Configuration = configuration;
 
-            var images = tomograph.OutputImages;
+            var images = tomograph.OutputImages.ToList();
 
-            Assert.NotNull(images.First());
+            Assert.IsNotEmpty(images);
 
-            images.First().Save(@"C:\Users\amileszko\Pictures\output.bmp");
+            for(int i=0; i<images.Count;i++)
+            {
+                images[i].Save(_projectDirectory + @"outputImages\" + $"output{i+1}.bmp");
+            }            
         }
     }
 }

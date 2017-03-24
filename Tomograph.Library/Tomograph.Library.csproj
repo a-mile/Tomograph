@@ -82,10 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IImageLoader.cs" />
-    <Compile Include="Abstract\IOutputImageFilter.cs" />
+    <Compile Include="Abstract\ISinogramFilter.cs" />
     <Compile Include="Abstract\IEmitterDetectorSystem.cs" />
     <Compile Include="SuperTomograph\TomographConfiguration.cs" />
-    <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Infrastructure\IoC.cs" />
     <Compile Include="Infrastructure\TomographRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

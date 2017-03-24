@@ -68,6 +68,7 @@ namespace Tomograph.Library.SuperTomograph
         public IEnumerable<Image<Gray, byte>> GetOutputImagesFromSinogram(Image<Gray, byte> inputImage, Image<Gray, byte> sinogram, TomographConfiguration configuration)
         {
             var outputImages = new List<Image<Gray, byte>>();
+
             float[,] brightnessArray = new float[inputImage.Width, inputImage.Height];
             int[,] countArray = new int[inputImage.Width, inputImage.Height];
 
@@ -107,15 +108,19 @@ namespace Tomograph.Library.SuperTomograph
 
                     DrawLine(brightnessArray, brightnessValue, countArray,emitterCoordinates, detectorCoordinates);
                 }
-              
+
+                if((columnNumber+1) % (sinogram.Width/configuration.OutputImagesCount) == 0)
+                {
+                    var currentBrigthnessArray = (float[,]) brightnessArray.Clone();
+                    DivideArray(currentBrigthnessArray, countArray);
+                    NormalizeArray(currentBrigthnessArray);
+                    outputImages.Add(GetImageFromBrightnessArray(currentBrigthnessArray));
+                }
+
                 columnNumber++;
                 angle += configuration.Alpha;
             }
-
-            DivideArray(brightnessArray, countArray);
-            NormalizeArray(brightnessArray);
-            outputImages.Add(GetImageFromBrightnessArray(brightnessArray));
-
+           
             return outputImages;
         }
 
@@ -168,6 +173,7 @@ namespace Tomograph.Library.SuperTomograph
         private float GetBrightness(Image<Gray, byte> inputImage,Coordinates emitterCoordinates, Coordinates detectorCoordinates)
         {
             float sum = 0;
+            int count = 0;
             int xi, dx, yi, dy;
             int ai, bi, d;
             var x = emitterCoordinates.X;
@@ -194,6 +200,7 @@ namespace Tomograph.Library.SuperTomograph
                 yi = -1;
                 dy = emitterCoordinates.Y - detectorCoordinates.Y;
                 sum += inputImage.Data[x, y, 0];
+                count++;
             }
 
             if (dx > dy)
@@ -216,6 +223,7 @@ namespace Tomograph.Library.SuperTomograph
                         x += xi;
                     }
                     sum += inputImage.Data[x, y, 0];
+                    count++;
                 }
             }
             else
@@ -239,10 +247,11 @@ namespace Tomograph.Library.SuperTomograph
                     }
 
                     sum += inputImage.Data[x, y, 0];
+                    count++;
                 }
             }
 
-            return sum;
+            return sum/count;
         }
 
         private void DrawLine(float[,] brightnessArray, float brightnessValue, int[,] countArray, Coordinates emitterCoordinates, Coordinates detectorCoordinates)
