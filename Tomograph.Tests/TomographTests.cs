@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Emgu.CV;
@@ -56,7 +57,7 @@ namespace Tomograph.Tests
         }
 
         [Test]
-        public void GetOutputImage()
+        public void GetOutputImages()
         {
             SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
 
@@ -80,6 +81,38 @@ namespace Tomograph.Tests
             {
                 images[i].Save(_projectDirectory + @"outputImages\" + $"output{i+1}.bmp");
             }            
+        }
+
+        [Test]
+        public void GetDicom()
+        {
+            SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
+
+            DicomInformation dicomInformation = new DicomInformation()
+            {
+                PatientName = "Jan Kowalski",
+                PatientAddress = "Poznan, Akacjowa 13",
+                PatientBirthDate = new DateTime(1987,12,12),
+                PatientSex = "M",
+                PatientAge = "30",
+                PatientWeight = "80",
+                StudyDate = DateTime.Now,
+                StudyDescription = "Jakis tam opis"
+            };
+
+            tomograph.DicomInformation = dicomInformation;
+
+            var imageLoader = new EmguCVImageLoader();
+            var outputImages = new List<Image<Gray, byte>>();
+            var outputImage = imageLoader.LoadImage(_projectDirectory + "dicomTest.bmp");
+            outputImages.Add(outputImage);
+            tomograph.OutputImages = outputImages;
+
+            var dicom = tomograph.Dicom;
+
+            Assert.IsNotNull(dicom);
+
+            dicom.Save(_projectDirectory + "dicom.dcm");
         }
     }
 }

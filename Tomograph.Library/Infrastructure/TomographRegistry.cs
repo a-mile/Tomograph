@@ -12,6 +12,7 @@ namespace Tomograph.Library.Infrastructure
             this.For<IImageLoader>().Use<EmguCVImageLoader>();
             this.For<IEmitterDetectorSystem>().Use<ConicalDetectorEmitterSystem>();
             this.For<ISinogramFilter>().Use(new Mock<ISinogramFilter>().Object);
+            this.For<IDicomCreator>().Use<FoDicomCreator>();
         }
     }
 }
