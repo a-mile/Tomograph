@@ -104,7 +104,7 @@ namespace Tomograph.Library.SuperTomograph
                                           i * configuration.Phi / (configuration.DetectorsCount - 1))) + height / 2
                     };
 
-                    float brightnessValue = sinogram.Data[columnNumber, i, 0];
+                    float brightnessValue = sinogram.Data[i,columnNumber, 0];
 
                     DrawLine(brightnessArray, brightnessValue, countArray,emitterCoordinates, detectorCoordinates);
                 }
@@ -134,7 +134,7 @@ namespace Tomograph.Library.SuperTomograph
                         inputArray[i, j] /= countArray[i, j];
                 }
             }
-        }
+        }        
 
         private void NormalizeArray(float[,] inputArray)
         {
@@ -154,11 +154,11 @@ namespace Tomograph.Library.SuperTomograph
         {
             Image<Gray, byte> image = new Image<Gray, byte>(brigthnessArray.GetLength(0), brigthnessArray.GetLength(1));
 
-            for (int i = 0; i < brigthnessArray.GetLength(0); i++)
+            for (int i = 0; i < brigthnessArray.GetLength(1); i++)
             {
-                for (int j = 0; j < brigthnessArray.GetLength(1); j++)
+                for (int j = 0; j < brigthnessArray.GetLength(0); j++)
                 {
-                    image.Data[i, j, 0] = (byte) brigthnessArray[i, j];
+                    image.Data[i, j, 0] = (byte) brigthnessArray[j, i];
                 }
             }
 
@@ -199,7 +199,7 @@ namespace Tomograph.Library.SuperTomograph
             {
                 yi = -1;
                 dy = emitterCoordinates.Y - detectorCoordinates.Y;
-                sum += inputImage.Data[x, y, 0];
+                sum += inputImage.Data[y, x, 0];
                 count++;
             }
 
@@ -222,7 +222,7 @@ namespace Tomograph.Library.SuperTomograph
                         d += bi;
                         x += xi;
                     }
-                    sum += inputImage.Data[x, y, 0];
+                    sum += inputImage.Data[y, x, 0];
                     count++;
                 }
             }
@@ -246,7 +246,7 @@ namespace Tomograph.Library.SuperTomograph
                         y += yi;
                     }
 
-                    sum += inputImage.Data[x, y, 0];
+                    sum += inputImage.Data[y, x, 0];
                     count++;
                 }
             }

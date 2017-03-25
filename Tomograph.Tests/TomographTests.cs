@@ -42,8 +42,8 @@ namespace Tomograph.Tests
             TomographConfiguration configuration = new TomographConfiguration
             {
                 InputImagePath = _samplePath,
-                Alpha = (float)Math.PI/180,
-                Phi = (float)Math.PI/2,
+                Alpha = (float)Math.PI/360,
+                Phi = (float)Math.PI/4,
                 DetectorsCount = 360
             };
 
@@ -64,8 +64,8 @@ namespace Tomograph.Tests
             TomographConfiguration configuration = new TomographConfiguration
             {
                 InputImagePath = _samplePath,
-                Alpha = (float)Math.PI / 180,
-                Phi = (float)Math.PI / 2,
+                Alpha = (float)Math.PI / 360,
+                Phi = (float)Math.PI/1.07f,
                 DetectorsCount = 360,
                 Filter = false,
                 OutputImagesCount = 10
