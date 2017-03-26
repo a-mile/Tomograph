@@ -10,5 +10,6 @@ namespace Tomograph.Library.SuperTomograph
         public int DetectorsCount { get; set; } = 360;
         public bool Filter { get; set; } = false;
         public int OutputImagesCount { get; set; } = 1;
+        public int KernelSize { get; set; } = 100;
     }
 }

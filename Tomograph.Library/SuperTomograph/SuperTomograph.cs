@@ -21,13 +21,7 @@ namespace Tomograph.Library.SuperTomograph
             get { return _sinogram ?? (_sinogram = GetSinogram()); }
             set { _sinogram = value; }
         }
-
-        public Image<Gray, byte> FilteredSinogram
-        {
-            get { return _filteredSinogram ?? (_filteredSinogram = GetFilteredSinogram()); }
-            set { _filteredSinogram = value; }
-        }
-
+       
         public IEnumerable<Image<Gray, byte>> OutputImages
         {
             get { return _outputImages ?? (_outputImages = GetOutputImages()); }
@@ -44,15 +38,11 @@ namespace Tomograph.Library.SuperTomograph
         private IEnumerable<Image<Gray, byte>> _outputImages;
         private readonly IEmitterDetectorSystem _emitterDetectorSystem;
 
-        private Image<Gray, byte> _filteredSinogram;
-        private readonly ISinogramFilter _sinogramFilter;
-        
         public SuperTomograph(IImageLoader bitmapLoader, IEmitterDetectorSystem emitterDetectorSystem,
-            ISinogramFilter sinogramFilter, IDicomCreator dicomCreator)
+             IDicomCreator dicomCreator)
         {
             _bitmapLoader = bitmapLoader;
             _emitterDetectorSystem = emitterDetectorSystem;
-            _sinogramFilter = sinogramFilter;
             _dicomCreator = dicomCreator;
 
             Configuration = new TomographConfiguration();
@@ -79,14 +69,9 @@ namespace Tomograph.Library.SuperTomograph
         private IEnumerable<Image<Gray, byte>> GetOutputImages()
         {
             return _emitterDetectorSystem.GetOutputImagesFromSinogram(InputImage,
-                Configuration.Filter ? FilteredSinogram : Sinogram, Configuration);
+                Sinogram, Configuration);
         }
-
-        private Image<Gray, byte> GetFilteredSinogram()
-        {
-            return _sinogramFilter.GetFilteredSinogram(Sinogram);
-        }
-
+        
         private DicomFile GetDicom()
         {
             return _dicomCreator.GetDicom(_outputImages.Last(), DicomInformation);

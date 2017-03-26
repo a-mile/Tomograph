@@ -43,7 +43,7 @@ namespace Tomograph.Tests
             {
                 InputImagePath = _samplePath,
                 Alpha = (float)Math.PI/360,
-                Phi = (float)Math.PI/4,
+                Phi = (float)Math.PI/1.07f,
                 DetectorsCount = 360
             };
 
@@ -57,6 +57,30 @@ namespace Tomograph.Tests
         }
 
         [Test]
+        public void GetFilteredSinogram()
+        {
+            SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
+
+            TomographConfiguration configuration = new TomographConfiguration
+            {
+                InputImagePath = _samplePath,
+                Alpha = (float)Math.PI / 360,
+                Phi = (float)Math.PI / 1.07f,
+                DetectorsCount = 360,
+                Filter = true,
+                KernelSize = 100
+            };
+
+            tomograph.Configuration = configuration;
+
+            Image<Gray, byte> image = tomograph.Sinogram;
+
+            Assert.IsNotNull(image);
+
+            image.Save(_projectDirectory + "filteredSinogram.bmp");
+        }
+
+        [Test]
         public void GetOutputImages()
         {
             SuperTomograph tomograph = IoC.Container.GetInstance<SuperTomograph>();
@@ -67,7 +91,7 @@ namespace Tomograph.Tests
                 Alpha = (float)Math.PI / 360,
                 Phi = (float)Math.PI/1.07f,
                 DetectorsCount = 360,
-                Filter = false,
+                Filter = true,               
                 OutputImagesCount = 10
             };
 

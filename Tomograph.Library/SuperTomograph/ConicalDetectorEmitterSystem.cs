@@ -16,7 +16,7 @@ namespace Tomograph.Library.SuperTomograph
     public class ConicalDetectorEmitterSystem : IEmitterDetectorSystem
     {
         public Image<Gray, byte> GetSinogram(Image<Gray,byte> inputImage, TomographConfiguration configuration)
-        {
+        {           
             int columnsCount = (int) (360/RadianToDegree(configuration.Alpha));
 
             float[,] brightnessArray = new float[columnsCount, configuration.DetectorsCount];           
@@ -60,9 +60,45 @@ namespace Tomograph.Library.SuperTomograph
                 angle += configuration.Alpha;
             }
 
+            if (configuration.Filter)
+            {
+                FilterArray(brightnessArray, configuration.KernelSize);
+            }
+
             NormalizeArray(brightnessArray);
 
             return GetImageFromBrightnessArray(brightnessArray);
+        }
+
+        private void FilterArray(float[,] inputArray, int kernelSize)
+        {
+            for (int i = 0; i < inputArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < inputArray.GetLength(1); j++)
+                {
+                    for (int k = 1; k < kernelSize; k++)
+                    {
+                        if (j - k >= 0)
+                        {
+                            if (k%2 != 0)
+                            {
+                                inputArray[i, j] += (float) (-4/(Math.PI*Math.PI*k*k))*
+                                                    inputArray[i, j - k];
+
+                            }
+                        }
+
+                        if (j + k < inputArray.GetLength(1))
+                        {
+                            if (k%2 != 0)
+                            {
+                                inputArray[i, j] += (float) (-4/(Math.PI*Math.PI*k*k))*inputArray[i, j + k];
+                            }
+                        }
+
+                    }
+                }
+            }
         }
 
         public IEnumerable<Image<Gray, byte>> GetOutputImagesFromSinogram(Image<Gray, byte> inputImage, Image<Gray, byte> sinogram, TomographConfiguration configuration)
@@ -104,6 +140,7 @@ namespace Tomograph.Library.SuperTomograph
                                           i * configuration.Phi / (configuration.DetectorsCount - 1))) + height / 2
                     };
 
+                   
                     float brightnessValue = sinogram.Data[i,columnNumber, 0];
 
                     DrawLine(brightnessArray, brightnessValue, countArray,emitterCoordinates, detectorCoordinates);
@@ -113,7 +150,7 @@ namespace Tomograph.Library.SuperTomograph
                 {
                     var currentBrigthnessArray = (float[,]) brightnessArray.Clone();
                     DivideArray(currentBrigthnessArray, countArray);
-                    NormalizeArray(currentBrigthnessArray);
+                    NormalizeArray(currentBrigthnessArray);                    
                     outputImages.Add(GetImageFromBrightnessArray(currentBrigthnessArray));
                 }
 
@@ -122,18 +159,20 @@ namespace Tomograph.Library.SuperTomograph
             }
            
             return outputImages;
-        }
+        }        
 
         private void DivideArray(float[,] inputArray, int[,] countArray)
-        {
+        {           
             for (int i = 0; i < inputArray.GetLength(0); i++)
             {
                 for (int j = 0; j < inputArray.GetLength(1); j++)
                 {
-                    if(countArray[i,j] > 1)
+                    if (countArray[i, j] > 1)
+                    {
                         inputArray[i, j] /= countArray[i, j];
+                    }
                 }
-            }
+            }            
         }        
 
         private void NormalizeArray(float[,] inputArray)
@@ -149,7 +188,7 @@ namespace Tomograph.Library.SuperTomograph
                 }
             }
         }
-
+        
         private Image<Gray, byte> GetImageFromBrightnessArray(float[,] brigthnessArray)
         {
             Image<Gray, byte> image = new Image<Gray, byte>(brigthnessArray.GetLength(0), brigthnessArray.GetLength(1));

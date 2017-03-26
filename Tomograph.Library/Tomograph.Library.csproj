@@ -87,7 +87,6 @@
   <ItemGroup>
     <Compile Include="Abstract\IDicomCreator.cs" />
     <Compile Include="Abstract\IImageLoader.cs" />
-    <Compile Include="Abstract\ISinogramFilter.cs" />
     <Compile Include="Abstract\IEmitterDetectorSystem.cs" />
     <Compile Include="SuperTomograph\DicomInformation.cs" />
     <Compile Include="SuperTomograph\FoDicomCreator.cs" />
